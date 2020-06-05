@@ -92,8 +92,6 @@
                             if (response['result'] == 'success') {
                                 alert(response['msg']);
                                 window.location.reload();
-
-
                             }
                         }
                     });
@@ -128,7 +126,7 @@
                 success: function (response) {
                     if (response['result'] == 'success') {
                         let order = response['order_list'];
-
+                        console.log(order)
                         for (let i=0; i<order.length; i++) {
                             make_table(order[i]['name'], order[i]['num'], order[i]['address'], order[i]['phone_num']);
                         }

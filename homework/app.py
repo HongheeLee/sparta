@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 app = Flask(__name__)
+import re
 
 from pymongo import MongoClient           # pymongo를 임포트 하기(패키지 인스톨 먼저 해야겠죠?)
 client = MongoClient('localhost', 27017)  # mongoDB는 27017 포트로 돌아갑니다.
@@ -32,9 +33,10 @@ def write_orders():
 @app.route('/orders', methods=['GET'])
 def read_orders():
     order_list = list(db.shoppingmall.find({}, {'_id':False}))
-
-    return jsonify({'result':'success', 'msg': '이 요청은 GET!', 'order_list':order_list})
-
+    for order in order_list:
+        order['name'] = re.sub("([가-힣]{1})([가-힣]{1})([가-힣]{1,})", r"\1*\3", order['name'])
+        order['phone_num'] = re.sub("(\d{3})-(\d{1,2})(\d{2})-(\d{2})(\d{2})" , r"\1-\2**-**\5", order['phone_num'])
+    return jsonify({'result':'success', 'order_list':order_list})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
