@@ -1,8 +1,15 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver')
 import pandas as pd
 import time
+
+options = webdriver.ChromeOptions()
+options.add_argument('headless')
+options.add_argument('window-size=1920x1080')
+options.add_argument("disable-gpu")
+# 혹은 options.add_argument("--disable-gpu")
+
+driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver', chrome_options=options)
 
 # URL 설정 및 브라우저 실행
 keyword = '쇼코의+미소+최은영'
@@ -22,6 +29,18 @@ soup = BeautifulSoup(req, 'html.parser')
 lis = soup.select("#catalogs > ul > li")
 tables = soup.select("table")
 
+api = {'libraryStatus': 
+    {
+    'result':'success',
+    'msg' : '정상 처리되었습니다.',
+    'sogang': [],
+    'yonsei': [],
+    'ewha' : []
+    }
+    }
+
+sogang_list = []
+sogang_dict = {}
 # 도서 정보 가져오기
 count = 0
 for li in lis:
@@ -31,22 +50,27 @@ for li in lis:
     company = li.select_one("div.information > p:nth-child(3)").text
     year = li.select_one("div.information > p:nth-child(4)").text
     loc = li.select_one("div.holdingInfo > div > p > a").text
+    table = li.select_one("div.holdingInfo > div > div > div > table")
+    table_html = str(table)
+    table_df_list = pd.read_html(table_html)
+    table_df = table_df_list[0]
 
-    print(title, bookcover, author, company, year, loc)
+    sogang_dict['title']=title
+    sogang_dict['bookcover']=bookcover
+    sogang_dict['author']=author
+    sogang_dict['company']=company
+    sogang_dict['year']=year
+    sogang_dict['loc']=loc
+    sogang_dict['table']=table_df
+    sogang_list.append(sogang_dict)
+    
     # 원하는 권수만큼 크롤링하고 반복문 종료.
     count += 1
     if count == 2:
         break
+print(sogang_list)
+api['libraryStatus']['sogang']= sogang_list
+print(api)
 
-# 대출 현황 데이터프레임 형태로 가져오기
-count2 = 0
-for table in tables:
-    table_html = str(table)
-    table_df_list = pd.read_html(table_html)
-    table_df = table_df_list[0]
-    print(table_df)
-    count2 += 1
-    if count2 == 2:
-        break
 
 driver.close()
