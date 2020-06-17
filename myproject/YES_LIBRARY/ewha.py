@@ -14,6 +14,7 @@ driver.get(url_ewha)
 jss = driver.find_elements_by_xpath("//p[@class='location']/a/span")
 for js in jss:
     js.click()
+    time.sleep(0.5)
 
 # 크롤링 토대
 time.sleep(5)
@@ -21,35 +22,54 @@ req = driver.page_source
 headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
 soup = BeautifulSoup(req, 'html.parser')
 lis = soup.select("div.result > form > fieldset > ul > li")
-tables = soup.select("table")
 
+ewha_list = []
 
 # 도서 정보 가져오기
 count = 0
 for li in lis:
+    ewha_dict = {}
+    loc_list = []
+    status_list =[]
+
     title = li.select_one("dl > dd.title > a").text.split("/")[0].strip()
-    img = li.select_one("dl > dd.book > a > img")['src']
+    bookcover = li.select_one("dl > dd.book > a > img")['src']
     author = li.select_one("dl > dd.title > a").text.split("/")[1].strip()
     company = li.select_one("dl > dd.info").text.split(",")[0].split(":")[1].strip()
     year = li.select_one("dl > dd.info").text.split(",")[1].strip()
     locs = li.select("dl > dd.holdingInfo > div > p.location > a")
-    print(title, img, author, company, year)
+    divs = li.select("dl > dd.holdingInfo > div > div.holdingW")
+
     for loc in locs:
         if loc:
-            print(loc.text)
+            loc = loc.text
+            loc_list.append(loc)
+
+    for div in divs:
+        status_dict = {}
+        trs = div.select("div.listTable > table > tbody > tr")
+        for tr in trs:
+            book_loc = tr.select_one("td.location.expand").text
+            callnum = tr.select_one("td.callNum").text
+            borrow = tr.select_one("td > span").text
+            status_dict['book_loc'] = book_loc
+            status_dict['callnum'] = callnum
+            status_dict['borrow'] = borrow
+            status_list.append(status_dict)
+
+    ewha_dict['title']=title
+    ewha_dict['bookcover']=bookcover
+    ewha_dict['author']=author
+    ewha_dict['company']=company
+    ewha_dict['year']=year
+    ewha_dict['loc']=loc_list
+    ewha_dict['status'] = status_list
+
+    ewha_list.append(ewha_dict)
+
     count += 1
     if count == 2:
             break
-
-# 대출 현황 데이터프레임 형태로 가져오기
-count2 = 0
-for table in tables:
-    table_html = str(table)
-    table_df_list = pd.read_html(table_html)
-    table_df = table_df_list[0]
-    print(table_df)
-    count2 += 1
-    if count2 == 2:
-        break
+print(ewha_list)
     
 driver.close()

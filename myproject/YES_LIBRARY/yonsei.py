@@ -23,29 +23,62 @@ headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/
 soup = BeautifulSoup(req, 'html.parser')
 divs = soup.select("#divContent > div.searchResult > div.pcWrap > div.mid > div > div.sectionList > div")
 
+api = {'libraryStatus': 
+    {
+    'result':'success',
+    'msg' : '정상 처리되었습니다.',
+    'sogang': [],
+    'yonsei': [],
+    'ewha' : []
+    }
+    }
+yonsei_list = []
+
 # 도서 정보 가져오기
 count1 = 0
 for div in divs:
+    yonsei_dict = {}
+    loc_list = []
+    status_list = []
+
     title = div.select_one("dl > dt > a").text
-    img = div.select_one("dd.imgList > a > span > img")['src']
+    bookcover = div.select_one("dd.imgList > a > span > img")['src']
     author = div.select_one("dd.imgList > ul > li:nth-child(1)").text
     company = div.select_one("dd.imgList > ul > li:nth-child(2)").text
     year = div.select_one("dd.imgList > ul > li:nth-child(3)").text
-    print(title, img, author, company, year)
+    locs = div.select("a.availableBtn")
+    docs = div.select("div.locationList")
+#dlCatalogCAT000001793868 > dd:nth-child(4) > div > dl > dd > ul > li:nth-child(1) > p:nth-child(1) > a
+    # 대출 현황 표 가져오기
+    for loc in locs:
+        location = loc.parent.text
+        loc_list.append(location)
+        lis = loc.parent.parent.select("div > dl > dd > ul > li")
+        for li in lis:
+            status_dict = {}
+            book_loc = li.parent.parent.parent.select_one("dt").text
+            callnum = li.select_one("p:nth-child(1) > a").text
+            borrow = li.select_one("p:nth-child(2) > a > span").text
+            status_dict['book_loc'] = book_loc
+            status_dict['callnum'] = callnum
+            status_dict['borrow'] = borrow
+            status_list.append(status_dict)
+        
+    yonsei_dict['title']=title
+    yonsei_dict['bookcover']=bookcover
+    yonsei_dict['author']=author
+    yonsei_dict['company']=company
+    yonsei_dict['year']=year
+    yonsei_dict['loc'] = loc_list
+    yonsei_dict['status'] = status_list
 
-    # 대출 현황 가져오기
-    cams = div.select("a.availableBtn")
-    locs = div.select("div.locationList")
-    for i in range(len(cams)):
-        cam = cams[i].parent.text
-        loc = locs[i].select_one("dl > dt").text
-        nums = locs[i].select("dl> dd > ul > li > p > a")
-        print(cam, loc)
-        for num in nums:
-            print(num.text)
-    # 원하는 만큼 크롤링하고 반복문 종료
+    yonsei_list.append(yonsei_dict)
+
     count1 += 1
     if count1 == 2:
         break
+api['libraryStatus']['yonsei'] = yonsei_list
+print(api)
 
 driver.close()
+
