@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver')
-import pandas as pd
 import time
 
 # URL 설정 및 실행
@@ -46,9 +45,10 @@ for div in divs:
     author = div.select_one("dd.imgList > ul > li:nth-child(1)").text
     company = div.select_one("dd.imgList > ul > li:nth-child(2)").text
     year = div.select_one("dd.imgList > ul > li:nth-child(3)").text
+    book_url = div.select_one("dl > dt > a")['href']
     locs = div.select("a.availableBtn")
     docs = div.select("div.locationList")
-#dlCatalogCAT000001793868 > dd:nth-child(4) > div > dl > dd > ul > li:nth-child(1) > p:nth-child(1) > a
+
     # 대출 현황 표 가져오기
     for loc in locs:
         location = loc.parent.text
@@ -69,6 +69,7 @@ for div in divs:
     yonsei_dict['author']=author
     yonsei_dict['company']=company
     yonsei_dict['year']=year
+    yonsei_dict['book_url'] = book_url
     yonsei_dict['loc'] = loc_list
     yonsei_dict['status'] = status_list
 
@@ -78,6 +79,7 @@ for div in divs:
     if count1 == 2:
         break
 api['libraryStatus']['yonsei'] = yonsei_list
+api['libraryStatus']['url_yonsei'] = url_yonsei
 print(api)
 
 driver.close()

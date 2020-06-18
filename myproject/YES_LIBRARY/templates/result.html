@@ -31,17 +31,19 @@
                     <div class="title">
                         <h3>연세대</h3>
                     </div>
-                    <div class="media">
-                        <img src="{{ url_for('static', filename='lemon.jpg') }}" class="align-self-center mr-3"
-                            alt="...">
-                        <div class="media-body">
-                            <h5 class="mt-0">쇼코의 미소 : 최은영 소설</h5>
-                            <p>
-                                최은영 | 문학동네 | 2016
-                            </p>
-                            <p class="mb-0">
-                                2관 5층 일반도서 [811.38 최685ㅅ] 상세정보확인
-                            </p>
+                    <div class="media" id="yonsei-blocks">
+                        <div class="block">
+                            <img src="{{ url_for('static', filename='lemon.jpg') }}" class="align-self-center mr-3"
+                                alt="...">
+                            <div class="media-body">
+                                <a href="#"><h5 class="mt-0">쇼코의 미소 : 최은영 소설</h5></a>
+                                <p>
+                                    최은영 | 문학동네 | 2016
+                                </p>
+                                <p class="mb-0">
+                                    2관 5층 일반도서 [811.38 최685ㅅ] 상세정보확인
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -49,7 +51,7 @@
                     <div class="title">
                         <h3>이화여대</h3>
                     </div>
-                    <div class="media">
+                    <div class="media" id='ewha_block'>
                         <img src="{{ url_for('static', filename='lemon.jpg') }}" class="align-self-center mr-3"
                             alt="...">
                         <div class="media-body">
@@ -67,7 +69,7 @@
                     <div class="title">
                         <h3>서강대</h3>
                     </div>
-                    <div class="media">
+                    <div class="media" id='sogang_block'>
                         <img src="{{ url_for('static', filename='lemon.jpg') }}" class="align-self-center mr-3"
                             alt="...">
                         <div class="media-body">
@@ -90,6 +92,7 @@
         <script>
 
             $(document).ready(function () {
+                $("#yonsei-blocks").empty();
                 get_result("{{keyword}}");
             });
 
@@ -100,14 +103,47 @@
                     url: `/result/getlist?keyword_give=${keyword}`,
                     success: function (response) {
                         if (response['result'] == 'success') {
-                            alert(response['msg']);
+                            console.log(response['row']['libraryStatus']['yonsei'])
+                            // alert(response['msg']);
+                            yonsei = response['row']['libraryStatus']['yonsei']
+                            for (let i = 0; i < yonsei.length; i++) {
+                                title = yonsei[i]['title']
+                                author = yonsei[i]['author']
+                                bookcover = yonsei[i]['bookcover']
+                                book_url = yonsei[i]['book_url']
+                                year = yonsei[i]['year']
+                                company = yonsei[i]['company']
+                                loc = yonsei[i]['loc']
+                                status = yonsei[i]['status']
+
+                                make_yonsei_block(title, author, bookcover, book_url, year, company, loc)
+                            }
                         }
                     }
                 });
             }
+
+            function make_yonsei_block(title, author, bookcover, book_url, year, company, loc) {
+                temp_html = `<div class="block">
+                                                <img src="${bookcover}" onerror="this.src='https://library.yonsei.ac.kr/image/ko/solution/common/ico/type_m_M.png'" class="align-self-center mr-3"
+                                                    alt="...">
+                                                <div class="media-body">
+                                                    <a href="${book_url}"><h5 class="mt-0">${title}</h5></a>
+                                                    <p>
+                                                        ${author} | ${company} | ${year}
+                                                    </p>
+                                                    <p class="mb-0">
+                                                        ${loc[0]}
+                                                    </p>
+                                                </div>
+                                            </div>`
+
+                                $("#yonsei-blocks").append(temp_html);
+            }
+
             function searching() {
                 let keyword = $("#searchBox").val();
-                keyword = keyword.replace(/ /gi, "+");
+                // keyword = keyword.replace(/ /gi, "+");
                 window.location.href = `/result?keyword_give=${keyword}`;
             }
         </script>

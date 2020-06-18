@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-import pandas as pd
 import time
 driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver')
 
@@ -37,6 +36,7 @@ for li in lis:
     author = li.select_one("dl > dd.title > a").text.split("/")[1].strip()
     company = li.select_one("dl > dd.info").text.split(",")[0].split(":")[1].strip()
     year = li.select_one("dl > dd.info").text.split(",")[1].strip()
+    book_url = li.select_one("dl > dd.book > a")['href']
     locs = li.select("dl > dd.holdingInfo > div > p.location > a")
     divs = li.select("dl > dd.holdingInfo > div > div.holdingW")
 
@@ -62,6 +62,7 @@ for li in lis:
     ewha_dict['author']=author
     ewha_dict['company']=company
     ewha_dict['year']=year
+    ewha_dict['book_url'] = book_url
     ewha_dict['loc']=loc_list
     ewha_dict['status'] = status_list
 

@@ -63,6 +63,7 @@ body {
     padding: 1.5%;
 }
 
-.media {
+.media-body {
     display: flex;
 }
+

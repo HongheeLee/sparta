@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-import pandas as pd
 import time
 
 options = webdriver.ChromeOptions()
@@ -36,7 +35,7 @@ api = {'libraryStatus':
     'msg' : '정상 처리되었습니다.',
     'sogang': [],
     'yonsei': [],
-    'ewha' : []
+    'ewha' : [],
     }
 }
 
@@ -51,6 +50,7 @@ for li in lis:
     author = li.select_one("div.information > p:nth-child(2)").text
     company = li.select_one("div.information > p:nth-child(3)").text
     year = li.select_one("div.information > p:nth-child(4)").text
+    book_url = li.select_one("p > a")['href']
     loc = li.select_one("div.holdingInfo > div > p > a").text
     trs = li.select("div.holdingInfo > div > div > div > table > tbody > tr")
     
@@ -72,6 +72,7 @@ for li in lis:
     sogang_dict['author']=author
     sogang_dict['company']=company
     sogang_dict['year']=year
+    sogang_dict['book_url'] = book_url
     sogang_dict['loc']=loc
     sogang_dict['status'] = status_list
 
@@ -83,6 +84,7 @@ for li in lis:
         break
 
 api['libraryStatus']['sogang']= sogang_list
+api['libraryStatus']['url_sogang'] = url_sogang
 print(api)
 
 
