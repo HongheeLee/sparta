@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+  <style>
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      vertical-align: middle;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+      display: none;
+    }
+
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked+.slider {
+      background-color: #2196F3;
+    }
+
+    input:focus+.slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked+.slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    p {
+      margin: 0px;
+      display: inline-block;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+
+    </head><body><style type="text/css">.tg {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    .tg td {
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      overflow: hidden;
+      padding: 10px 5px;
+      word-break: normal;
+    }
+
+    .tg th {
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: normal;
+      overflow: hidden;
+      padding: 10px 5px;
+      word-break: normal;
+    }
+
+    .tg .tg-8jgo {
+      border-color: #ffffff;
+      text-align: center;
+      vertical-align: top
+    }
+
+    .tg .tg-id4c {
+      background-color: #fbe1df;
+      border-color: #fbe1df;
+      font-weight: bold;
+      text-align: center;
+      vertical-align: top
+    }
+
+    .tg .tg-ufv0 {
+      background-color: #fbe1df;
+      border-color: #fbe1df;
+      font-weight: bold;
+      text-align: center;
+      vertical-align: middle
+    }
+
+    .tg .tg-v0mg {
+      border-color: #ffffff;
+      text-align: center;
+      vertical-align: middle
+    }
+  </style>
+  <table class="tg">
+    <thead>
+      <tr>
+        <th class="tg-id4c">No.</th>
+        <th class="tg-ufv0">소장처 / 자료실</th>
+        <th class="tg-id4c">청구기호</th>
+        <th class="tg-id4c">도서상태</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tg-8jgo">1</td>
+        <td class="tg-v0mg">인문자료실(중도2층)</td>
+        <td class="tg-8jgo">811.37 최은영 쇼018가</td>
+        <td class="tg-8jgo">대출가능</td>
+      </tr>
+      <tr>
+        <td class="tg-8jgo"></td>
+        <td class="tg-v0mg"></td>
+        <td class="tg-8jgo"></td>
+        <td class="tg-8jgo"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="status" style='display : none'>
+    <table class="tg">
+      <thead>
+        <tr>
+          <th class="tg-id4c">No.</th>
+          <th class="tg-ufv0">소장처 / 자료실</th>
+          <th class="tg-id4c">청구기호</th>
+          <th class="tg-id4c">도서상태</th>
+        </tr>
+      </thead>
+      <tbody id='yonsei-table${i}'>
+      </tbody>
+    </table>
+  </div>
+  <label class="switch">
+    <input type="checkbox">
+    <span class="slider round"></span>
+  </label>
+  <p>OFF</p>
+  <p style="display:none;">ON</p>
+  </body>
+  <script>
+    var check = $("input[type='checkbox']");
+    check.click(function () {
+      $("p").toggle();
+    });
+  </script>
+
+</html>

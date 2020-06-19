@@ -47,7 +47,7 @@ def sogang_search(keyword):
     for li in lis:
         sogang_dict = {}
         status_list = []
-
+        loc_list = []
         # 가져와야 할 도서 정보 경로 지정
         title = li.select_one("p > a").text
         bookcover = li.select_one("div.information > p.bookCover > img")['src']
@@ -56,6 +56,7 @@ def sogang_search(keyword):
         year = li.select_one("div.information > p:nth-child(4)").text
         book_url = li.select_one("p > a")['href']
         loc = li.select_one("div.holdingInfo > div > p > a").text
+        loc_list.append(loc)
         trs = li.select("div.holdingInfo > div > div > div > table > tbody > tr")
         
         # 표 안에 있는 정보들은 한번 더 타고 들어가야 함.
@@ -78,7 +79,7 @@ def sogang_search(keyword):
         sogang_dict['company']=company
         sogang_dict['year']=year
         sogang_dict['book_url'] = book_url
-        sogang_dict['loc']=loc
+        sogang_dict['loc']=loc_list
         sogang_dict['status'] = status_list
 
         sogang_list.append(sogang_dict)
