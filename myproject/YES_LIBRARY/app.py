@@ -24,7 +24,7 @@ api = {'libraryStatus':
 def sogang_search(keyword):
     url_sogang = "https://library.sogang.ac.kr/searchTotal/result?st=KWRD&si=TOTAL&q=" + keyword
     driver.get(url_sogang)
-
+    time.sleep(2)
      # 대출현황 보기 위해 토글 열기
     jss = driver.find_elements_by_xpath("//p[@class='location']")
     js_count = 0
@@ -36,7 +36,6 @@ def sogang_search(keyword):
             break
 
     # 크롤링 토대
-    time.sleep(3)
     req = driver.page_source
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
     soup = BeautifulSoup(req, 'html.parser')
@@ -54,7 +53,7 @@ def sogang_search(keyword):
         author = li.select_one("div.information > p:nth-child(2)").text
         company = li.select_one("div.information > p:nth-child(3)").text
         year = li.select_one("div.information > p:nth-child(4)").text
-        book_url = li.select_one("p > a")['href']
+        book_url = "https://library.sogang.ac.kr/" +li.select_one("p > a")['href']
         loc = li.select_one("div.holdingInfo > div > p > a").text
         loc_list.append(loc)
         trs = li.select("div.holdingInfo > div > div > div > table > tbody > tr")
@@ -96,7 +95,7 @@ def sogang_search(keyword):
 def yonsei_search(keyword):
     url_yonsei = "https://library.yonsei.ac.kr/main/searchBrief?q=" + keyword
     driver.get(url_yonsei)
-
+    time.sleep(2)
     # 대출 현황 보기 위해 토글 열기
     campus = list(driver.find_elements_by_xpath("//a[@class='availableBtn']"))
     for i in range(len(campus)):
@@ -105,7 +104,6 @@ def yonsei_search(keyword):
         locs[i].click()
             
     # 크롤링 토대
-    time.sleep(3)
     req = driver.page_source
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
     soup = BeautifulSoup(req, 'html.parser')
@@ -168,7 +166,7 @@ def yonsei_search(keyword):
 def ewha_search(keyword):
     url_ewha = "http://lib.ewha.ac.kr/search/tot/result?st=KWRD&si=TOTAL&websysdiv=tot&q=" + keyword
     driver.get(url_ewha)
-
+    time.sleep(2)
     # 대출현황 보기 위해 토글 열기
     jss = driver.find_elements_by_xpath("//p[@class='location']/a/span")
     js_count = 0
@@ -180,7 +178,6 @@ def ewha_search(keyword):
             break
 
     # 크롤링 토대
-    time.sleep(5)
     req = driver.page_source
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
     soup = BeautifulSoup(req, 'html.parser')
@@ -199,7 +196,7 @@ def ewha_search(keyword):
         author = li.select_one("dl > dd.title > a").text.split("/")[1].strip()
         company = li.select_one("dl > dd.info").text.split(",")[0].split(":")[1].strip()
         year = li.select_one("dl > dd.info").text.split(",")[1].strip()
-        book_url = li.select_one("dl > dd.book > a")['href']
+        book_url = "http://lib.ewha.ac.kr/" + li.select_one("dl > dd.book > a")['href']
         locs = li.select("dl > dd.holdingInfo > div > p.location > a")
         divs = li.select("dl > dd.holdingInfo > div > div.holdingW")
 
@@ -266,7 +263,6 @@ def give_result():
     sogang_search(keyword_receive)
     yonsei_search(keyword_receive)
     ewha_search(keyword_receive)
-
     return jsonify({'result': "success", 'msg':'정상 처리되었습니다.', 'row':api})
 
 if __name__ == '__main__':

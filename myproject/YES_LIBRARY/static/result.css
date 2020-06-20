@@ -53,7 +53,7 @@ body {
 }
 
 .contents {
-    width: 70%;
+    width: 48%;
     position: relative;
     top: 13%;
     left: 18%;
@@ -61,4 +61,108 @@ body {
 
 .title {
     padding: 1.5%;
+    border-bottom: 1px solid #dcdcdc;
+}
+
+.media {
+    display: flex;
+}
+
+div > i {
+    cursor: pointer;
+}
+
+h5.mt-0 {
+    color: #000;
+    font-size: 18px;
+    font-weight: bolder;
+}
+
+.media-body {
+    padding-left: 10px;
+}
+
+div.catalog {
+    border-radius: 10px;
+    margin-bottom: 5%;
+}
+
+#yonsei-cata {
+    border: solid 3px #003E7E;
+}
+
+#ewha-cata {
+    border: solid 3px #00462A;
+}
+
+#sogang-cata {
+    border: solid 3px #AF272F;
+    
+}
+
+#yonsei-blocks, #ewha-blocks, #sogang-blocks {
+    padding: 3%;
+}
+
+.more-result > a {
+        text-decoration: none;
+        color: black;
+        float: right;
+        font-weight: bold;
+}
+
+.tg {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.tg td {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+}
+
+.tg th {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+}
+
+.tg .tg-8jgo {
+    border-color: #ffffff;
+    text-align: center;
+    vertical-align: top
+}
+
+.tg .tg-id4c {
+    background-color: #fbe1df;
+    border-color: #fbe1df;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: top
+}
+
+.tg .tg-ufv0 {
+    background-color: #fbe1df;
+    border-color: #fbe1df;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle
+}
+
+.tg .tg-v0mg {
+    border-color: #ffffff;
+    text-align: center;
+    vertical-align: middle
 }
