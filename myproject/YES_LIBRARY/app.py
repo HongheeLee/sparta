@@ -4,14 +4,22 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 
-driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver')
 # options = webdriver.ChromeOptions()
 # options.add_argument('headless')
 # options.add_argument('window-size=1920x1080')
 # options.add_argument("disable-gpu")
 # # 혹은 options.add_argument("--disable-gpu")
 
-# driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver', chrome_options=options)
+# driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver')
+
+from selenium.webdriver.chrome.options import Options
+
+chrome_options = Options()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+
+driver = webdriver.Chrome(options=chrome_options, executable_path="/home/ubuntu/chromedriver")
     
 api = {'libraryStatus': 
     {
@@ -24,7 +32,7 @@ api = {'libraryStatus':
 def sogang_search(keyword):
     url_sogang = "https://library.sogang.ac.kr/searchTotal/result?st=KWRD&si=TOTAL&q=" + keyword
     driver.get(url_sogang)
-    time.sleep(2)
+    time.sleep(3)
      # 대출현황 보기 위해 토글 열기
     jss = driver.find_elements_by_xpath("//p[@class='location']")
     js_count = 0
@@ -48,9 +56,14 @@ def sogang_search(keyword):
         status_list = []
         loc_list = []
         # 가져와야 할 도서 정보 경로 지정
-        title = li.select_one("p > a").text
+        title = li.select_one("p > a")
+        if title is None:
+            return
+        else:
+            title = title.text
         bookcover = li.select_one("div.information > p.bookCover > img")['src']
         author = li.select_one("div.information > p:nth-child(2)").text
+
         company = li.select_one("div.information > p:nth-child(3)").text
         year = li.select_one("div.information > p:nth-child(4)").text
         book_url = "https://library.sogang.ac.kr/" +li.select_one("p > a")['href']
@@ -90,12 +103,11 @@ def sogang_search(keyword):
 
         # api에 추가
         api['libraryStatus']['sogang']= sogang_list
-        api['libraryStatus']['url_sogang'] = url_sogang
 
 def yonsei_search(keyword):
     url_yonsei = "https://library.yonsei.ac.kr/main/searchBrief?q=" + keyword
     driver.get(url_yonsei)
-    time.sleep(2)
+    time.sleep(4)
     # 대출 현황 보기 위해 토글 열기
     campus = list(driver.find_elements_by_xpath("//a[@class='availableBtn']"))
     for i in range(len(campus)):
@@ -117,7 +129,11 @@ def yonsei_search(keyword):
         loc_list = []
         status_list = []
 
-        title = div.select_one("dl > dt > a").text
+        title = div.select_one("dl > dt > a")
+        if title is None:
+            return
+        else:
+            title = title.text
         bookcover = div.select_one("dd.imgList > a > span > img")['src']
         author = div.select_one("dd.imgList > ul > li:nth-child(1)").text
         company = div.select_one("dd.imgList > ul > li:nth-child(2)").text
@@ -161,7 +177,6 @@ def yonsei_search(keyword):
 
     # api에 추가       
     api['libraryStatus']['yonsei'] = yonsei_list
-    api['libraryStatus']['url_yonsei'] = url_yonsei
 
 def ewha_search(keyword):
     url_ewha = "http://lib.ewha.ac.kr/search/tot/result?st=KWRD&si=TOTAL&websysdiv=tot&q=" + keyword
@@ -191,7 +206,12 @@ def ewha_search(keyword):
         loc_list = []
         status_list =[]
 
-        title = li.select_one("dl > dd.title > a").text.split("/")[0].strip()
+        title = li.select_one("dl > dd.title > a")
+        if title is None:
+            return
+        else:
+            title = title.text.split("/")[0].strip()
+
         bookcover = li.select_one("dl > dd.book > a > img")['src']
         author = li.select_one("dl > dd.title > a").text.split("/")[1].strip()
         company = li.select_one("dl > dd.info").text.split(",")[0].split(":")[1].strip()
@@ -237,9 +257,6 @@ def ewha_search(keyword):
                 break
     # api에 추가
     api['libraryStatus']['ewha']= ewha_list
-    api['libraryStatus']['url_ewha'] = url_ewha
-
-
 
 ## HTML을 주는 부분
 @app.route('/')

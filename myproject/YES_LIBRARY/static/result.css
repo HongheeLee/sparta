@@ -111,6 +111,19 @@ div.catalog {
         font-weight: bold;
 }
 
+.no-data {
+    padding: 20px 0;
+    border: 1px solid #e6e6e6;
+    color: #737373;
+    text-align: center;
+    margin: 20px 40px;
+}
+
+.no-data > span {
+    display: inline-block;
+    padding: 3px 0 0 15px;
+}
+
 .tg {
     border-collapse: collapse;
     border-spacing: 0;

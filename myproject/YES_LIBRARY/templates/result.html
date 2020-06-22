@@ -5,9 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YES LIBRARY</title>
+    <meta property="og:title" content="YES LIBRARY" />
+    <meta property="og:description" content="연대, 이대, 서강대 도서관 통합 검색 서비스" />
+    <meta property="og:image" content="{{ url_for('static', filename='ogimage.png') }}" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='result.css') }}">
+    <link rel="icon" type="image/png" href="http://example.com/myicon.png">
     <!-- <link rel="stylesheet" type="text/css" href="result.css"> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
@@ -68,8 +72,8 @@
                     url: `/result/getlist?keyword_give=${keyword}`,
                     success: function (response) {
                         if (response['result'] == 'success') {
-                            // console.log(response['row']['libraryStatus'])
-                            // alert(response['msg']);
+                            console.log(response['row']['libraryStatus'])
+                            alert(response['msg']);
                             let yonsei_list = response['row']['libraryStatus']['yonsei'];
                             let ewha_list = response['row']['libraryStatus']['ewha'];
                             let sogang_list = response['row']['libraryStatus']['sogang'];
@@ -84,6 +88,7 @@
                 });
             }
 
+
             function openclose(id) {
                 // id 값 post-box의 display 값이 block 이면
                 if ($('#' + id).css('display') == 'block') {
@@ -94,7 +99,13 @@
                     $('#' + id).show();
                 }
             }
+
             function make_card(uni_name, uni_list = []) {
+               
+                if (uni_list.length == 0) {
+                    empty_result(uni_name);
+                    return;
+                }
                 for (let i = 0; i < uni_list.length; i++) {
                     let title = uni_list[i]['title']
                     let author = uni_list[i]['author']
@@ -137,7 +148,7 @@
                                                         </table>
                                                     </div>
                                                 </div>
-                                            </div>`
+                                            </div>`;
                         $("#" + uni_name + "-blocks").append(temp_html);
                     } else if (typeof loc[0] == 'undefined') {
                         let temp_html = `<div class="media">
@@ -260,6 +271,13 @@
                     default:
                         break;
                 }
+            }
+
+            function empty_result(univ) {
+                let empty_temp = `<p class="no-data">
+                                <span>검색 결과가 없습니다.</span>
+                                </p>`;
+                $("#" + univ + "-blocks").append(empty_temp);
             }
         </script>
 </body>
