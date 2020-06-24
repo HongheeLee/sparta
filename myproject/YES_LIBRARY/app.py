@@ -42,7 +42,6 @@ def sogang_search(keyword):
     jss = driver.find_elements_by_xpath("//p[@class='location']/a")
     js_count = 0
     for js in jss:
-        print(js)
         js.click()
         time.sleep(0.5)
         js_count += 1
@@ -127,7 +126,7 @@ def yonsei_search(keyword):
     # 크롤링 토대
     req = driver.page_source
     soup = BeautifulSoup(req, 'html.parser')
-    divs = soup.select(".divList")
+    divs = soup.select("div.bookSection > div.sectionList > .divList")
 
     yonsei_list = []
 
@@ -143,7 +142,7 @@ def yonsei_search(keyword):
             return
         else:
             title = title.text
-        bookcover = div.select_one("dd.imgList > a > span > img")['src']
+        bookcover = div.select_one("dl > dd.imgList > a > span > img")['src']
         author = div.select_one("dd.imgList > ul > li:nth-child(1)").text
         company = div.select_one("dd.imgList > ul > li:nth-child(2)").text
         year = div.select_one("dd.imgList > ul > li:nth-child(3)").text
