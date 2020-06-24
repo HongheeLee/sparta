@@ -4,20 +4,25 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 
-# options = webdriver.ChromeOptions()
-# options.add_argument('headless')
-# options.add_argument('window-size=1920x1080')
-# options.add_argument("disable-gpu")
-# # 혹은 options.add_argument("--disable-gpu")
-
+# 로컬 환경에서 chromedriver 실행
 # driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver')
 
 from selenium.webdriver.chrome.options import Options
 
+# display 할 수 있도록
+# from pyvirtualdisplay import Display
+# display = Display(visible=0, size=(1024, 768))
+# display.start()
+# driver = webdriver.Chrome("/home/ubuntu/chromedriver")
+
+# AWS EC2 서버에서 headless로 chromebrowser 실행
 chrome_options = Options()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--ignore-certificate-errors')
+chrome_options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+
 
 driver = webdriver.Chrome(options=chrome_options, executable_path="/home/ubuntu/chromedriver")
     
@@ -32,13 +37,14 @@ api = {'libraryStatus':
 def sogang_search(keyword):
     url_sogang = "https://library.sogang.ac.kr/searchTotal/result?st=KWRD&si=TOTAL&q=" + keyword
     driver.get(url_sogang)
-    time.sleep(3)
+    time.sleep(1)
      # 대출현황 보기 위해 토글 열기
-    jss = driver.find_elements_by_xpath("//p[@class='location']")
+    jss = driver.find_elements_by_xpath("//p[@class='location']/a")
     js_count = 0
     for js in jss:
+        print(js)
         js.click()
-        time.sleep(1)
+        time.sleep(0.5)
         js_count += 1
         if js_count == 2:
             break
@@ -87,6 +93,8 @@ def sogang_search(keyword):
         sogang_dict['title']=title
         if (bookcover[0] != '/'):
             sogang_dict['bookcover']=bookcover
+        else:
+            sogang_dict['bookcover'] = []
         sogang_dict['author']=author
         sogang_dict['company']=company
         sogang_dict['year']=year
@@ -107,19 +115,20 @@ def sogang_search(keyword):
 def yonsei_search(keyword):
     url_yonsei = "https://library.yonsei.ac.kr/main/searchBrief?q=" + keyword
     driver.get(url_yonsei)
-    time.sleep(4)
+    time.sleep(1)
+    
     # 대출 현황 보기 위해 토글 열기
     campus = list(driver.find_elements_by_xpath("//a[@class='availableBtn']"))
     for i in range(len(campus)):
         campus[i].click()
         locs = list(driver.find_elements_by_xpath("//div[@class='locationList']"))
         locs[i].click()
-            
+
     # 크롤링 토대
     req = driver.page_source
-    headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
     soup = BeautifulSoup(req, 'html.parser')
-    divs = soup.select("#divContent > div.searchResult > div.pcWrap > div.mid > div > div.sectionList > div")
+    divs = soup.select(".divList")
+
     yonsei_list = []
 
     # 가져와야 할 도서 정보 경로 지정
@@ -161,6 +170,8 @@ def yonsei_search(keyword):
         yonsei_dict['title']=title
         if (bookcover[0] != '/'):
             yonsei_dict['bookcover']=bookcover
+        else:
+            yonsei_dict['bookcover'] = []
         yonsei_dict['author']=author
         yonsei_dict['company']=company
         yonsei_dict['year']=year
@@ -181,7 +192,7 @@ def yonsei_search(keyword):
 def ewha_search(keyword):
     url_ewha = "http://lib.ewha.ac.kr/search/tot/result?st=KWRD&si=TOTAL&websysdiv=tot&q=" + keyword
     driver.get(url_ewha)
-    time.sleep(2)
+    time.sleep(1)
     # 대출현황 보기 위해 토글 열기
     jss = driver.find_elements_by_xpath("//p[@class='location']/a/span")
     js_count = 0
@@ -194,7 +205,6 @@ def ewha_search(keyword):
 
     # 크롤링 토대
     req = driver.page_source
-    headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
     soup = BeautifulSoup(req, 'html.parser')
     lis = soup.select("div.result > form > fieldset > ul > li")
     ewha_list = []
@@ -242,6 +252,8 @@ def ewha_search(keyword):
         ewha_dict['title']=title
         if (bookcover[0] != '/'):
             ewha_dict['bookcover']=bookcover
+        else:
+            ewha_dict['bookcover'] = []
         ewha_dict['author']=author
         ewha_dict['company']=company
         ewha_dict['year']=year
