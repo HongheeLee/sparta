@@ -3,18 +3,15 @@ app = Flask(__name__)
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
+from pymongo import MongoClient
+
+client = MongoClient('mongodb://hong:hong@52.78.199.138',27017)
+db = client.dbsparta
 
 # 로컬 환경에서 chromedriver 실행
 # driver = webdriver.Chrome(r'C:\Users\HongheeLee\chromedriver')
 
 from selenium.webdriver.chrome.options import Options
-
-# display 할 수 있도록
-# from pyvirtualdisplay import Display
-# display = Display(visible=0, size=(1024, 768))
-# display.start()
-# driver = webdriver.Chrome("/home/ubuntu/chromedriver")
-
 # AWS EC2 서버에서 headless로 chromebrowser 실행
 chrome_options = Options()
 chrome_options.add_argument('--headless')
@@ -22,7 +19,6 @@ chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument('--ignore-certificate-errors')
 chrome_options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
-
 
 driver = webdriver.Chrome(options=chrome_options, executable_path="/home/ubuntu/chromedriver")
     
@@ -279,11 +275,22 @@ def result():
     keyword = request.args.get('keyword_give')
     return render_template('result.html', keyword = keyword)
 
-## API 역할을 하는 부분
-# @app.route('/result/', methods=['POST'])
-# def get_keyword():
-#    keyword_receive = request.form['keyword_give']
-#    return jsonify({'result':'success', 'msg': '검색 완료'})
+# API 역할을 하는 부분
+@app.route('/keywords', methods=['POST'])
+def get_keyword():
+    keyword_receive = request.form['keyword_give']
+    doc = {
+        'keyword' : keyword_receive
+    }
+    db.search.insert_one(doc)
+    return jsonify({'result':'success', 'msg': '검색 완료'})
+
+@app.route('/keywords', methods=['GET'])
+def put_keywords():
+    # 1. 모든 reviews의 문서를 가져온 후 list로 변환합니다.
+    # db.search.find().sort({"id": -1})
+    keywords = list(db.search.find({},{'_id':False}))[-1:-5:-1]
+    return jsonify({'result': 'success', 'keywords':keywords})
 
 @app.route('/result/getlist', methods=['GET'])
 def give_result():

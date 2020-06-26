@@ -27,24 +27,50 @@
             </button>
         </div>
         <!-- </form> -->
-
-        <div class="ranking">
-            <h4>인기 검색어</h4>
-            <div id="rank_table">
-                <ul>
-                    <li class="rank_item">1. 쇼코의 미소 (최은영)</li>
-                    <li class="rank_item">2. 노인과 바다 (어니스트 헤밍웨이)</li>
-                    <li class="rank_item">3. 레몬 (권여선)</li>
-                </ul>
-            </div>
+        <div id="recent-list">
+            <span class="recent-item">최근 검색어 : </span>
         </div>
+
     </div>
 
     <script>
+        $(document).ready(function () {
+            recent_keyword();
+        });
+
         function searching() {
             let keyword = $("#searchBox").val();
-            // keyword = keyword.replace(/ /gi, "+");
-            window.location.href = `/result?keyword_give=${keyword}`;
+            $.ajax({
+                type: "POST",
+                url: "/keywords",
+                data: { 'keyword_give': keyword },
+                success: function (response) {
+                    if (response['result'] == 'success'){
+                        alert(response['msg'])
+                        window.location.href = `/result?keyword_give=${keyword}`;
+                    }
+                    
+                }
+            });
+        }
+
+        function recent_keyword() {
+            $.ajax({
+                type: "GET",
+                url: "/keywords",
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let keywords = response['keywords'];
+                        for (let i = 0; i < keywords.length; i++) {
+                            let keyword = keywords[i]['keyword'];
+                            let temp_html = `<a href="http://yeslibrary.shop/result?keyword_give=${keyword}">
+                                                <span class="recent-item">${keyword}, </span>
+                                            </a>`
+                            $('#recent-list').append(temp_html);
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>

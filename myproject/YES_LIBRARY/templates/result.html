@@ -14,6 +14,10 @@
     <link rel="icon" type="image/png" href="http://example.com/myicon.png">
     <!-- <link rel="stylesheet" type="text/css" href="result.css"> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script type='text/javascript'>
+        Kakao.init('ff468cbad0feedfb4f4edb3d8e77e622');
+    </script>
 </head>
 
 <body>
@@ -54,7 +58,10 @@
                     </div>
                 </div>
                 <div class="share">
-                    카카오톡 공유하기
+                    <a id="kakao-link-btn" href="javascript:sendLink()" style="float: right;">
+                        <span style="color: black; font-weight: bold;">카카오톡 공유하기</span>
+                        <img src="//developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png" style="width: 25px;"/>
+                    </a>
                 </div>
             </div>
         </div>
@@ -101,7 +108,7 @@
             }
 
             function make_card(uni_name, uni_list = []) {
-               
+
                 if (uni_list.length == 0) {
                     empty_result(uni_name);
                     return;
@@ -231,10 +238,22 @@
                     }
                 }
             }
+            
             function searching() {
-                let keyword = $("#searchBox").val();
-                window.location.href = `/result?keyword_give=${keyword}`;
-            }
+            let keyword = $("#searchBox").val();
+            $.ajax({
+                type: "POST",
+                url: "/keywords",
+                data: { 'keyword_give': keyword },
+                success: function (response) {
+                    if (response['result'] == 'success'){
+                        alert(response['msg'])
+                        window.location.href = `/result?keyword_give=${keyword}`;
+                    }
+                    
+                }
+            });
+        }
 
             function more_result(uni_name, keyword) {
                 switch (uni_name) {
@@ -278,6 +297,31 @@
                                 <span>검색 결과가 없습니다.</span>
                                 </p>`;
                 $("#" + univ + "-blocks").append(empty_temp);
+            }
+
+            function sendLink() {
+                Kakao.Link.sendDefault({
+                    objectType: 'feed',
+                    content: {
+                        title: "YES LIBRARY "+'"{{keyword}}"' +" 검색 결과",
+                        description: '연세대, 이화여대, 서강대 도서관 통합 검색',
+                        imageUrl:
+                            'https://i.ibb.co/BPJLn8p/yeslibrary.png',
+                        link: {
+                            mobileWebUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}",
+                            webUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}"
+                        },
+                    },
+                    buttons: [
+                        {
+                            title: '웹으로 보기',
+                            link: {
+                                mobileWebUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}",
+                            webUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}"
+                            },
+                        }
+                    ],
+                })
             }
         </script>
 </body>
