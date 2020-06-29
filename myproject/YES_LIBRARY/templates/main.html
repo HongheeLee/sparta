@@ -46,7 +46,7 @@
                 data: { 'keyword_give': keyword },
                 success: function (response) {
                     if (response['result'] == 'success'){
-                        alert(response['msg'])
+                        // alert(response['msg'])
                         window.location.href = `/result?keyword_give=${keyword}`;
                     }
                     

@@ -619,3 +619,20 @@
 [0624/194934.423:ERROR:process_reader_win.cc(123)] NtOpenThread: {액세스 거부} 프로세스가 개체에 액세스를 요구했지만 액세스 권한이 없습니다. (0xc0000022)
 [0624/194934.423:ERROR:exception_snapshot_win.cc(98)] thread ID 27852 not found in process
 [0624/194934.423:ERROR:exception_snapshot_win.cc(98)] thread ID 19876 not found in process
+[0626/125739.373:ERROR:file_io.cc(89)] ReadExactly: expected 36, observed 0
+[0626/125752.253:ERROR:process_reader_win.cc(123)] NtOpenThread: {액세스 거부} 프로세스가 개체에 액세스를 요구했지만 액세스 권한이 없습니다. (0xc0000022)
+[0626/125752.256:ERROR:exception_snapshot_win.cc(98)] thread ID 35420 not found in process
+[0626/125752.286:ERROR:process_reader_win.cc(123)] NtOpenThread: {액세스 거부} 프로세스가 개체에 액세스를 요구했지만 액세스 권한이 없습니다. (0xc0000022)
+[0626/125752.288:ERROR:exception_snapshot_win.cc(98)] thread ID 9500 not found in process
+[0626/125752.321:ERROR:process_reader_win.cc(123)] NtOpenThread: {액세스 거부} 프로세스가 개체에 액세스를 요구했지만 액세스 권한이 없습니다. (0xc0000022)
+[0626/125752.323:ERROR:exception_snapshot_win.cc(98)] thread ID 32448 not found in process
+[0626/125752.360:ERROR:process_reader_win.cc(123)] NtOpenThread: {액세스 거부} 프로세스가 개체에 액세스를 요구했지만 액세스 권한이 없습니다. (0xc0000022)
+[0626/125752.361:ERROR:exception_snapshot_win.cc(98)] thread ID 28904 not found in process
+[0626/125752.397:ERROR:process_reader_win.cc(151)] SuspendThread: 액세스가 거부되었습니다. (0x5)
+[0626/125752.399:ERROR:process_reader_win.cc(151)] SuspendThread: 액세스가 거부되었습니다. (0x5)
+[0626/125752.399:ERROR:process_reader_win.cc(123)] NtOpenThread: {액세스 거부} 프로세스가 개체에 액세스를 요구했지만 액세스 권한이 없습니다. (0xc0000022)
+[0626/125752.400:ERROR:exception_snapshot_win.cc(98)] thread ID 35552 not found in process
+[0626/125752.405:ERROR:process_reader_win.cc(123)] NtOpenThread: {액세스 거부} 프로세스가 개체에 액세스를 요구했지만 액세스 권한이 없습니다. (0xc0000022)
+[0626/125752.405:ERROR:exception_snapshot_win.cc(98)] thread ID 10412 not found in process
+[0626/125752.597:ERROR:process_reader_win.cc(123)] NtOpenThread: {액세스 거부} 프로세스가 개체에 액세스를 요구했지만 액세스 권한이 없습니다. (0xc0000022)
+[0626/125752.597:ERROR:exception_snapshot_win.cc(98)] thread ID 35512 not found in process

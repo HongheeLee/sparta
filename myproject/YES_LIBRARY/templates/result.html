@@ -40,6 +40,9 @@
                         <h3 style="color: #003E7E; font-weight: bold;">연세대</h3>
                     </div>
                     <div id="yonsei-blocks">
+                        <p class="no-data">
+                            <span>검색 결과를 불러오는 중입니다.</span>
+                        </p>
                     </div>
 
                 </div>
@@ -48,6 +51,9 @@
                         <h3 style="color: #00462A; font-weight: bold;">이화여대</h3>
                     </div>
                     <div id="ewha-blocks">
+                        <p class="no-data">
+                            <span>검색 결과를 불러오는 중입니다.</span>
+                        </p>
                     </div>
                 </div>
                 <div class="catalog" id='sogang-cata'>
@@ -55,12 +61,16 @@
                         <h3 style="color: #AF272F; font-weight: bold;">서강대</h3>
                     </div>
                     <div id="sogang-blocks">
+                        <p class="no-data">
+                            <span>검색 결과를 불러오는 중입니다.</span>
+                        </p>
                     </div>
                 </div>
                 <div class="share">
                     <a id="kakao-link-btn" href="javascript:sendLink()" style="float: right;">
                         <span style="color: black; font-weight: bold;">카카오톡 공유하기</span>
-                        <img src="//developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png" style="width: 25px;"/>
+                        <img src="//developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
+                            style="width: 25px;" />
                     </a>
                 </div>
             </div>
@@ -73,14 +83,14 @@
             });
 
             function get_result(keyword) {
-                alert(keyword)
+                // alert(keyword)
                 $.ajax({
                     type: "GET",
                     url: `/result/getlist?keyword_give=${keyword}`,
                     success: function (response) {
                         if (response['result'] == 'success') {
-                            console.log(response['row']['libraryStatus'])
-                            alert(response['msg']);
+                            // console.log(response['row']['libraryStatus'])
+                            // alert(response['msg']);
                             let yonsei_list = response['row']['libraryStatus']['yonsei'];
                             let ewha_list = response['row']['libraryStatus']['ewha'];
                             let sogang_list = response['row']['libraryStatus']['sogang'];
@@ -122,6 +132,7 @@
                     let company = uni_list[i]['company']
                     let loc = uni_list[i]['loc']
                     let status = uni_list[i]['status']
+                    $("#" + uni_name + "-blocks").empty();
 
                     if (loc.length == 1) {
                         let temp_html = `<div class="media">
@@ -238,22 +249,22 @@
                     }
                 }
             }
-            
+
             function searching() {
-            let keyword = $("#searchBox").val();
-            $.ajax({
-                type: "POST",
-                url: "/keywords",
-                data: { 'keyword_give': keyword },
-                success: function (response) {
-                    if (response['result'] == 'success'){
-                        alert(response['msg'])
-                        window.location.href = `/result?keyword_give=${keyword}`;
+                let keyword = $("#searchBox").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/keywords",
+                    data: { 'keyword_give': keyword },
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            alert(response['msg'])
+                            window.location.href = `/result?keyword_give=${keyword}`;
+                        }
+
                     }
-                    
-                }
-            });
-        }
+                });
+            }
 
             function more_result(uni_name, keyword) {
                 switch (uni_name) {
@@ -303,7 +314,7 @@
                 Kakao.Link.sendDefault({
                     objectType: 'feed',
                     content: {
-                        title: "YES LIBRARY "+'"{{keyword}}"' +" 검색 결과",
+                        title: "YES LIBRARY " + '"{{keyword}}"' + " 검색 결과",
                         description: '연세대, 이화여대, 서강대 도서관 통합 검색',
                         imageUrl:
                             'https://i.ibb.co/BPJLn8p/yeslibrary.png',
@@ -317,7 +328,7 @@
                             title: '웹으로 보기',
                             link: {
                                 mobileWebUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}",
-                            webUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}"
+                                webUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}"
                             },
                         }
                     ],
