@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 from pymongo import MongoClient
+from multiprocessing import Process, Manager
+import json
 
 client = MongoClient('mongodb://hong:hong@52.78.199.138',27017)
 db = client.dbsparta
@@ -20,32 +22,25 @@ chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument('--ignore-certificate-errors')
 chrome_options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
 
-driver = webdriver.Chrome(options=chrome_options, executable_path="/home/ubuntu/chromedriver")
-    
-api = {'libraryStatus': 
-    {
-    'sogang': [],
-    'yonsei': [],
-    'ewha' : []
-    }
-}
+# driver = webdriver.Chrome(options=chrome_options, executable_path="/home/ubuntu/chromedriver")
 
-def sogang_search(keyword):
+def sogang_search(keyword, api):
+    driver1 = webdriver.Chrome(options=chrome_options, executable_path="/home/ubuntu/chromedriver")
     url_sogang = "https://library.sogang.ac.kr/searchTotal/result?st=KWRD&si=TOTAL&q=" + keyword
-    driver.get(url_sogang)
-    time.sleep(1)
+    driver1.get(url_sogang)
+    time.sleep(0.5)
      # 대출현황 보기 위해 토글 열기
-    jss = driver.find_elements_by_xpath("//p[@class='location']/a")
+    jss = driver1.find_elements_by_xpath("//p[@class='location']/a")
     js_count = 0
     for js in jss:
         js.click()
-        time.sleep(0.5)
+        time.sleep(0.3)
         js_count += 1
         if js_count == 2:
             break
 
     # 크롤링 토대
-    req = driver.page_source
+    req = driver1.page_source
     soup = BeautifulSoup(req, 'html.parser')
     lis = soup.select("#catalogs > ul > li")
     sogang_list = []
@@ -58,7 +53,7 @@ def sogang_search(keyword):
         # 가져와야 할 도서 정보 경로 지정
         title = li.select_one("p > a")
         if title is None:
-            return
+            break
         else:
             title = title.text
         bookcover = li.select_one("div.information > p.bookCover > img")['src']
@@ -103,26 +98,27 @@ def sogang_search(keyword):
         if count == 2:
             break
 
-        # api에 추가
-        api['libraryStatus']['sogang']= sogang_list
+    # api에 추가
+    api['sogang']= sogang_list
+    driver1.quit()
 
-def yonsei_search(keyword):
+def yonsei_search(keyword, api):
+    driver2 = webdriver.Chrome(options=chrome_options, executable_path="/home/ubuntu/chromedriver")
     url_yonsei = "https://library.yonsei.ac.kr/main/searchBrief?q=" + keyword
-    driver.get(url_yonsei)
-    time.sleep(1)
+    driver2.get(url_yonsei)
+    time.sleep(0.5)
     
     # 대출 현황 보기 위해 토글 열기
-    campus = list(driver.find_elements_by_xpath("//a[@class='availableBtn']"))
+    campus = list(driver2.find_elements_by_xpath("//a[@class='availableBtn']"))
     for i in range(len(campus)):
         campus[i].click()
-        locs = list(driver.find_elements_by_xpath("//div[@class='locationList']"))
+        locs = list(driver2.find_elements_by_xpath("//div[@class='locationList']"))
         locs[i].click()
 
     # 크롤링 토대
-    req = driver.page_source
+    req = driver2.page_source
     soup = BeautifulSoup(req, 'html.parser')
     divs = soup.select("div.bookSection > div.sectionList > .divList")
-
     yonsei_list = []
 
     # 가져와야 할 도서 정보 경로 지정
@@ -134,7 +130,7 @@ def yonsei_search(keyword):
 
         title = div.select_one("dl > dt > a")
         if title is None:
-            return
+            break
         else:
             title = title.text
         bookcover = div.select_one("dl > dd.imgList > a > span > img")['src']
@@ -181,14 +177,16 @@ def yonsei_search(keyword):
             break
 
     # api에 추가       
-    api['libraryStatus']['yonsei'] = yonsei_list
+    api['yonsei'] = yonsei_list
+    driver2.quit()
 
-def ewha_search(keyword):
+def ewha_search(keyword, api):
+    driver3 = webdriver.Chrome(options=chrome_options, executable_path="/home/ubuntu/chromedriver")
     url_ewha = "http://lib.ewha.ac.kr/search/tot/result?st=KWRD&si=TOTAL&websysdiv=tot&q=" + keyword
-    driver.get(url_ewha)
+    driver3.get(url_ewha)
     time.sleep(1)
     # 대출현황 보기 위해 토글 열기
-    jss = driver.find_elements_by_xpath("//p[@class='location']/a/span")
+    jss = driver3.find_elements_by_xpath("//p[@class='location']/a/span")
     js_count = 0
     for js in jss:
         js.click()
@@ -198,7 +196,7 @@ def ewha_search(keyword):
             break
 
     # 크롤링 토대
-    req = driver.page_source
+    req = driver3.page_source
     soup = BeautifulSoup(req, 'html.parser')
     lis = soup.select("div.result > form > fieldset > ul > li")
     ewha_list = []
@@ -212,7 +210,7 @@ def ewha_search(keyword):
 
         title = li.select_one("dl > dd.title > a")
         if title is None:
-            return
+            break
         else:
             title = title.text.split("/")[0].strip()
 
@@ -262,7 +260,23 @@ def ewha_search(keyword):
         if count == 2:
                 break
     # api에 추가
-    api['libraryStatus']['ewha']= ewha_list
+    api['ewha']= ewha_list
+    driver3.quit()
+
+def multi(keyword, api):
+    p1 = Process(target=sogang_search, args=(keyword, api)) 
+    p2 = Process(target=yonsei_search, args=(keyword, api)) 
+    p3 = Process(target=ewha_search, args=(keyword, api)) 
+
+    # start로 각 프로세스를 시작합니다. func1이 끝나지 않아도 func2가 실행됩니다.
+    p1.start()
+    p2.start()
+    p3.start()
+
+    # # join으로 각 프로세스가 종료되길 기다립니다 p1.join()이 끝난 후 p2.join()을 수행합니다
+    p1.join()
+    p2.join()
+    p3.join()
 
 ## HTML을 주는 부분
 @app.route('/')
@@ -286,18 +300,17 @@ def get_keyword():
 
 @app.route('/keywords', methods=['GET'])
 def put_keywords():
-    # 1. 모든 reviews의 문서를 가져온 후 list로 변환합니다.
-    # db.search.find().sort({"id": -1})
     keywords = list(db.search.find({},{'_id':False}))[-1:-5:-1]
     return jsonify({'result': 'success', 'keywords':keywords})
 
 @app.route('/result/getlist', methods=['GET'])
 def give_result():
     keyword_receive = request.args.get('keyword_give')
-    sogang_search(keyword_receive)
-    yonsei_search(keyword_receive)
-    ewha_search(keyword_receive)
-    return jsonify({'result': "success", 'msg':'정상 처리되었습니다.', 'row':api})
+    with Manager() as manager:
+        api = manager.dict()
+        multi(keyword_receive, api)
+        api = json.dumps(api.copy(), ensure_ascii = False)
+        return jsonify({'result': "success", 'msg':'정상 처리되었습니다.', 'row':api})
 
 if __name__ == '__main__':
    app.run('0.0.0.0',port=5000,debug=True)

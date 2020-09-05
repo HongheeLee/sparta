@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='result.css') }}">
-    <link rel="icon" type="image/png" href="http://example.com/myicon.png">
+    <!-- <link rel="icon" type="image/png" href="http://example.com/myicon.png"> -->
     <!-- <link rel="stylesheet" type="text/css" href="result.css"> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
@@ -89,11 +89,13 @@
                     url: `/result/getlist?keyword_give=${keyword}`,
                     success: function (response) {
                         if (response['result'] == 'success') {
-                            // console.log(response['row']['libraryStatus'])
+                            console.log(response['row'])
                             // alert(response['msg']);
-                            let yonsei_list = response['row']['libraryStatus']['yonsei'];
-                            let ewha_list = response['row']['libraryStatus']['ewha'];
-                            let sogang_list = response['row']['libraryStatus']['sogang'];
+                            let row = JSON.parse(response["row"])
+                            let yonsei_list = row['yonsei'];
+                            let ewha_list = row['ewha'];
+                            let sogang_list = row['sogang'];
+                            console.log(yonsei_list);
                             make_card('yonsei', yonsei_list);
                             make_card('ewha', ewha_list);
                             make_card('sogang', sogang_list);
@@ -117,12 +119,14 @@
                 }
             }
 
-            function make_card(uni_name, uni_list = []) {
+            function make_card(uni_name, uni_list) {
 
                 if (uni_list.length == 0) {
+                    $("#" + uni_name + "-blocks").empty();
                     empty_result(uni_name);
                     return;
                 }
+                $("#" + uni_name + "-blocks").empty();
                 for (let i = 0; i < uni_list.length; i++) {
                     let title = uni_list[i]['title']
                     let author = uni_list[i]['author']
@@ -132,7 +136,6 @@
                     let company = uni_list[i]['company']
                     let loc = uni_list[i]['loc']
                     let status = uni_list[i]['status']
-                    $("#" + uni_name + "-blocks").empty();
 
                     if (loc.length == 1) {
                         let temp_html = `<div class="media">
@@ -317,7 +320,7 @@
                         title: "YES LIBRARY " + '"{{keyword}}"' + " 검색 결과",
                         description: '연세대, 이화여대, 서강대 도서관 통합 검색',
                         imageUrl:
-                            'https://i.ibb.co/BPJLn8p/yeslibrary.png',
+                        "https://i.ibb.co/k9bvpWc/Kakao-Talk-20200707-200011290-05.png",
                         link: {
                             mobileWebUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}",
                             webUrl: 'http://yeslibrary.shop/result?keyword_give=' + "{{keyword}}"
